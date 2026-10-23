@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Новости УУНиТ</title>
+<style>
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo { width: auto; height: 130px; object-fit: contain; }
+  :root {
+    --bg: #6D28D9; /* Фиолетовый фон */
+    --card: #ffffff;
+    --text: #1f2328;
+    --muted: #6b7280;
+    --accent: #993AE7;
+    --border: #e5e7eb;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --warning: #d97706;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+  }
+
+  /* Шапка */
+  header {
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 12px 24px; position: sticky; top: 0; z-index: 10;
+  }
+  .header-inner {
+    max-width: 860px; margin: 0 auto; display: flex;
+    justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 20px; }
+  .user-box { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); }
+  .user-badge {
+    background: #eef2ff; color: var(--accent); padding: 2px 10px;
+    border-radius: 999px; font-size: 12px; font-weight: 600;
+  }
+
+  /* Кнопки */
+  .btn {
+    border: none; border-radius: 8px; padding: 8px 16px;
+    font-size: 14px; cursor: pointer; transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: .9; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-ghost { background: none; border: 1px solid var(--border); color: var(--muted); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-danger { background: var(--danger); color: #fff; }
+
+  /* Фильтры */
+  .filters {
+    display: flex; gap: 8px; flex-wrap: wrap; max-width: 860px;
+    margin: 16px auto 0; padding: 0 24px;
+  }
+  .filters button {
+    border: 1px solid var(--border); background: var(--card);
+    padding: 6px 14px; border-radius: 999px; cursor: pointer;
+    font-size: 14px; color: var(--muted); transition: all 0.15s;
+  }
+  .filters button:hover { border-color: var(--accent); color: var(--accent); }
+  .filters button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* Лента */
+  main { max-width: 860px; margin: 0 auto; padding: 16px 24px 48px; }
+  .toolbar { margin-bottom: 16px; display: flex; justify-content: flex-end; }
+  .news-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+  .news-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); transform: translateY(-1px); }
+  .cover { width: 100%; height: 200px; object-fit: cover; display: block; background: #eef2ff; }
+  .cover.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px; color: var(--accent);
+  }
+  .card-body { padding: 20px; }
+  .meta { display: flex; gap: 12px; align-items: center; font-size: 13px; color: var(--muted); margin-bottom: 8px; flex-wrap: wrap; }
+  .tag {
+    background: #eef2ff; color: var(--accent); padding: 2px 10px;
+    border-radius: 999px; font-weight: 600; font-size: 12px;
+  }
+  .status { padding: 2px 10px; border-radius: 999px; font-weight: 600; font-size: 12px; }
+  .status.pending { background: #fef3c7; color: var(--warning); }
+  .status.approved { background: #dcfce7; color: var(--success); }
+  .status.rejected { background: #fee2e2; color: var(--danger); }
+  .news-card h2 { margin: 0 0 8px; font-size: 18px; }
+  .news-card p { margin: 0; color: var(--muted); }
+  .empty { text-align: center; color: var(--muted); padding: 48px 0; }
+
+  /* Экран входа */
+  .login-screen {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; padding: 16px;
+  }
+  .login-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; width: 100%;
+    max-width: 360px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .login-box h2 { margin: 0; text-align: center; }
+  .login-box .sub { margin: 0; text-align: center; color: var(--muted); font-size: 14px; }
+  .role-list { display: flex; flex-direction: column; gap: 8px; }
+  .role-btn {
+    border: 1px solid var(--border); background: var(--card);
+    padding: 12px 16px; border-radius: 8px; cursor: pointer;
+    font-size: 15px; text-align: left; display: flex;
+    align-items: center; gap: 10px; transition: all 0.15s;
+  }
+  .role-btn:hover { border-color: var(--accent); background: #f8faff; }
+  .login-box input {
+    padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 15px; width: 100%;
+  }
+  .login-error { color: var(--danger); font-size: 14px; margin: 0; min-height: 18px; text-align: center; }
+  .login-hint { font-size: 12px; color: var(--muted); text-align: center; margin: 0; }
+  .back-link { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 14px; padding: 0; }
+
+  /* Страницы */
+  .page { display: none; }
+  .page.active { display: block; }
+  .create-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px;
+  }
+  .create-card h2 { margin: 0 0 16px; }
+  .create-card label { display: block; font-size: 14px; font-weight: 600; margin: 14px 0 6px; }
+  .create-card input[type="text"], .create-card textarea, .create-card select {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 15px; font-family: inherit;
+  }
+  .create-card textarea { min-height: 140px; resize: vertical; }
+  .create-card .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .create-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; flex-wrap: wrap; }
+
+  /* Загрузка фото */
+  .upload-block { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .custom-file-upload {
+    display: inline-block; padding: 10px 16px; background: #f8faff;
+    border: 1px dashed var(--accent); color: var(--accent);
+    border-radius: 8px; cursor: pointer; font-weight: 600;
+    text-align: center; transition: all 0.15s;
+  }
+  .custom-file-upload:hover { background: #eef2ff; border-style: solid; }
+  input[type="file"] { display: none; }
+  .image-preview {
+    display: none; width: 100%; max-height: 200px;
+    object-fit: cover; border-radius: 8px; border: 1px solid var(--border);
+  }
+
+  /* Модерация */
+  .mod-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 16px;
+  }
+  .mod-card h3 { margin: 0 0 8px; font-size: 17px; }
+  .mod-card p { margin: 0 0 12px; color: var(--muted); }
+  .mod-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* Уведомления */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: #fff; padding: 12px 20px;
+    border-radius: 10px; font-size: 14px; opacity: 0;
+    pointer-events: none; transition: all 0.25s; z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div id="roleStep">
+      <h2>🎓 Вход</h2>
+      <p class="sub">Выберите вашу роль</p>
+      <div class="role-list">
+        <button class="role-btn" data-role="student">Студент</button>
+        <button class="role-btn" data-role="teacher">Преподаватель</button>
+        <button class="role-btn" data-role="admin">Администратор</button>
+      </div>
+    </div>
+
+    <form id="credentialsStep" style="display:none; flex-direction: column; gap: 14px;">
+      <h2>Вход</h2>
+      <p class="sub" id="chosenRoleText"></p>
+      <input type="text" id="loginUser" placeholder="Логин" required autocomplete="username">
+      <input type="password" id="loginPass" placeholder="Пароль" required autocomplete="current-password">
+      <button type="submit" class="btn btn-primary" style="padding:10px;">Войти</button>
+      <p class="login-error" id="loginError"></p>
+      <p class="login-hint">Тестовые аккаунты: студент/студент, препод/препод, админ/админ</p>
+      <button type="button" class="back-link" id="backToRoles">← Назад к выбору роли</button>
+    </form>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <img src="https://www.kop.ru/upload/iblock/339/3395f4be6471da908451133ccd652f50.jpg" alt="Логотип" class="logo">
+      <h1>Новости УУНиТ</h1>
+    </div>
+    <div class="user-box" id="userBox" style="display:none;">
+      <span id="userName"></span>
+      <span class="user-badge" id="userRole"></span>
+      <button class="btn btn-ghost" id="logoutBtn">Выйти</button>
+    </div>
+  </div>
+</header>
+
+<div id="feedPage" class="page">
+  <div class="filters" id="filters">
+    <button class="active" data-tag="all">Все</button>
+    <button data-tag="Объявления">Объявления</button>
+    <button data-tag="Наука">Наука</button>
+    <button data-tag="События">События</button>
+    <button data-tag="Спорт">Спорт</button>
+    <button data-tag="Общее">Общее</button>
+  </div>
+
+  <main>
+    <div class="toolbar" id="toolbar">
+      <button class="btn btn-primary" id="createBtn" style="display:none;">Опубликовать новость</button>
+    </div>
+    <div id="feed"></div>
+  </main>
+</div>
+
+<div id="createPage" class="page">
+  <main>
+    <div class="create-card">
+      <h2>📝 Новая публикация</h2>
+      <label for="postTitle">Заголовок</label>
+      <input type="text" id="postTitle" placeholder="О чем новость?" maxlength="120">
+
+      <label for="postText">Текст</label>
+      <textarea id="postText" placeholder="Расскажите подробности..."></textarea>
+
+      <label for="postTag">Рубрика</label>
+      <select id="postTag">
+        <option>Объявления</option>
+        <option>Наука</option>
+        <option>События</option>
+        <option>Спорт</option>
+        <option>Общее</option>
+      </select>
+
+      <div class="upload-block" id="uploadBlock">
+        <label>Обложка (необязательно)</label>
+        <label for="postImageFile" class="custom-file-upload" id="uploadLabel">
+          📷 Выбрать фото с компьютера
+        </label>
+        <input type="file" id="postImageFile" accept="image/*">
+        <img id="previewImg" class="image-preview" alt="Предпросмотр">
+        <div class="hint">Если не выбрать, будет заглушка 🎓. Максимум 2 МБ.</div>
+      </div>
+
+      <div class="create-actions">
+        <button class="btn btn-ghost" id="cancelCreate">Отмена</button>
+        <button class="btn btn-primary" id="submitPost">Отправить</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="moderationPage" class="page">
+  <main>
+    <h2 style="margin-top:0;">Модерация новостей</h2>
+    <div id="moderationList"></div>
+    <div class="toolbar" style="justify-content: flex-start; margin-top: 8px;">
+      <button class="btn btn-ghost" id="backToFeedFromMod">← К ленте</button>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const USERS = {
+    student: { login: "студент", pass: "студент", name: "Иван Студентов", role: "Студент" },
+    teacher: { login: "препод", pass: "препод", name: "Мария Преподовна", role: "Преподаватель" },
+    admin: { login: "админ", pass: "админ", name: "Админ Админович", role: "Администратор" }
+  };
+
+  const PERMISSIONS = {
+    "Студент": { canPublish: false, canModerate: false, canUploadImage: false },
+    "Преподаватель": { canPublish: true, canModerate: false, canUploadImage: true },
+    "Администратор": { canPublish: true, canModerate: true, canUploadImage: true }
+  };
+
+  // =================== ГЕНЕРАТОР НОВОСТЕЙ ===================
+  const TAGS = ["Объявления", "Наука", "События", "Спорт", "Общее"];
+  const TITLES = [
+    "Новый семестр: что нас ждет?", "Студенты УУНиТ снова в топе", 
+    "Открытие научной лаборатории", "Спортивные достижения наших ребят",
+    "Важное объявление для первокурсников", "Лекция от приглашенного эксперта",
+    "Хакатон: итоги и победители", "Обновление в расписании",
+    "Стипендии и гранты: как получить?", "Встреча с работодателями"
+  ];
+  const TEXTS = [
+    "Подробности читайте на официальном сайте университета. Не пропустите важные дедлайны.",
+    "Мероприятие пройдет в главном корпусе. Вход свободный для всех желающих.",
+    "Команда университета показала отличный результат и заняла призовое место.",
+    "Успейте подать заявку до конца недели. Количество мест ограничено.",
+    "Для участия необходимо зарегистрироваться в личном кабинете студента."
+  ];
+  const AUTHORS = ["Администратор", "Мария Преподовна", "Иван Студентов", "Деканат"];
+
+  function createGradientImage(text, color) {
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='400'><rect width='100%' height='100%' fill='${color}'/><text x='50%' y='50%' fill='white' font-size='40' font-family='sans-serif' text-anchor='middle' dominant-baseline='middle'>${text}</text></svg>`;
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  }
+
+  const COLORS = ['#993AE7', '#16a34a', '#d97706', '#dc2626', '#2563eb', '#0891b2'];
+
+  let news = [];
+  const today = new Date();
+
+  for (let i = 0; i < 10; i++) {
+    const title = TITLES[i];
+    const tag = TAGS[i % TAGS.length];
+    const color = COLORS[i % COLORS.length];
+    
+    const date = new Date(today);
+    date.setDate(today.getDate() - i); 
+    const dateStr = date.toISOString().slice(0, 10);
+
+    news.push({
+      id: i + 1,
+      title: title,
+      text: TEXTS[i % TEXTS.length],
+      tag: tag,
+      date: dateStr,
+      image: createGradientImage(tag, color),
+      status: "approved",
+      author: AUTHORS[i % AUTHORS.length]
+    });
+  }
+  news.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // ==================== СОСТОЯНИЕ ====================
+  let currentRole = null;
+  let currentUser = null;
+  let currentFilter = "all";
+  let displayedCount = 4; 
+  let isLoading = false; 
+
+  // =================== ЭЛЕМЕНТЫ ===================
+  const $ = id => document.getElementById(id);
+  const loginScreen = $('loginScreen');
+  const roleStep = $('roleStep');
+  const credentialsStep = $('credentialsStep');
+  const chosenRoleText = $('chosenRoleText');
+  const loginError = $('loginError');
+  const userBox = $('userBox');
+  const userName = $('userName');
+  const userRole = $('userRole');
+  const feedPage = $('feedPage');
+  const createPage = $('createPage');
+  const moderationPage = $('moderationPage');
+  const feed = $('feed');
+  const filtersEl = $('filters');
+  const toolbar = $('toolbar');
+  const createBtn = $('createBtn');
+  const toastEl = $('toast');
+  
+  const uploadBlock = $('uploadBlock');
+  const fileInput = $('postImageFile');
+  const previewImg = $('previewImg');
+  const uploadLabel = $('uploadLabel');
+
+  // ==================== УТИЛИТЫ ====================
+  function esc(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function todayISO() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  let toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
+  }
+
+  function canPublish() { return currentUser && PERMISSIONS[currentUser.role].canPublish; }
+  function canModerate() { return currentUser && PERMISSIONS[currentUser.role].canModerate; }
+  function canUploadImage() { return currentUser && PERMISSIONS[currentUser.role].canUploadImage; }
+
+  // ==================== НАВИГАЦИЯ ====================
+  function showPage(page) {
+    [feedPage, createPage, moderationPage].forEach(p => p.classList.remove('active'));
+    page.classList.add('active');
+    window.scrollTo({ top: 0 });
+  }
+
+  // =================== АВТОРИЗАЦИЯ ===================
+  function resetLogin() {
+    roleStep.style.display = 'block';
+    credentialsStep.style.display = 'none';
+    loginError.textContent = '';
+    $('loginUser').value = '';
+    $('loginPass').value = '';
+    currentRole = null;
+  }
+
+  document.querySelectorAll('.role-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentRole = btn.dataset.role;
+      chosenRoleText.textContent = 'Роль: ' + USERS[currentRole].role;
+      roleStep.style.display = 'none';
+      credentialsStep.style.display = 'flex';
+      loginError.textContent = '';
+      $('loginUser').focus();
+    });
+  });
+
+  $('backToRoles').addEventListener('click', resetLogin);
+
+  credentialsStep.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const login = $('loginUser').value.trim();
+    const pass = $('loginPass').value;
+    const user = USERS[currentRole];
+
+    if (user && login === user.login && pass === user.pass) {
+      currentUser = user;
+      sessionStorage.setItem('authRole', currentRole);
+      enterApp();
+    } else {
+      loginError.textContent = 'Неверный логин или пароль';
+    }
+  });
+
+  $('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem('authRole');
+    currentUser = null;
+    loginScreen.style.display = 'flex';
+    userBox.style.display = 'none';
+    resetLogin();
+    showPage(feedPage);
+  });
+
+  function enterApp() {
+    loginScreen.style.display = 'none';
+    userBox.style.display = 'flex';
+    userName.textContent = currentUser.name;
+    userRole.textContent = currentUser.role;
+    createBtn.style.display = canPublish() ? 'inline-block' : 'none';
+    renderToolbar();
+    render();
+    showPage(feedPage);
+  }
+
+  // ==================== ТУЛБАР ====================
+  function renderToolbar() {
+    toolbar.innerHTML = '';
+    if (canModerate()) {
+      const modBtn = document.createElement('button');
+      modBtn.className = 'btn btn-ghost';
+      modBtn.textContent = '⚙️ Модерация';
+      modBtn.style.marginRight = '8px';
+      modBtn.addEventListener('click', () => {
+        renderModeration();
+        showPage(moderationPage);
+      });
+      toolbar.appendChild(modBtn);
+    }
+    if (canPublish()) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-primary';
+      btn.textContent = '📝 Опубликовать новость';
+      btn.addEventListener('click', openCreatePage);
+      toolbar.appendChild(btn);
+    }
+  }
+
+  // =================== ЛЕНТА ===================
+  filtersEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    filtersEl.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.tag;
+    displayedCount = 4;
+    render();
+  });
+
+  function render() {
+    const approved = news.filter(n => n.status === 'approved');
+    const filtered = currentFilter === 'all' ? approved : approved.filter(n => n.tag === currentFilter);
+    const items = filtered.slice(0, displayedCount);
+
+    if (!items.length) {
+      feed.innerHTML = '<div class="empty">Новостей пока нет</div>';
+      return;
+    }
+
+    feed.innerHTML = items.map(n => `
+      <article class="news-card">
+        ${n.image ? `<img class="cover" src="${esc(n.image)}" alt="${esc(n.title)}" loading="lazy">` : `<div class="cover placeholder" aria-hidden="true">🎓</div>`}
+        <div class="card-body">
+          <div class="meta">
+            <span class="tag">${esc(n.tag)}</span>
+            <span>${formatDate(n.date)}</span>
+            <span style="color: var(--muted);">· ${esc(n.author)}</span>
+          </div>
+          <h2>${esc(n.title)}</h2>
+          <p>${esc(n.text)}</p>
+        </div>
+      </article>
+    `).join('');
+
+    if (displayedCount < filtered.length) {
+      feed.innerHTML += `<div style="text-align: center; padding: 20px; color: var(--accent); font-weight: 600;">Загрузка новостей...</div>`;
+    }
+  }
+
+  // =================== БЕСКОНЕЧНАЯ ПРОКРУТКА ===================
+  window.addEventListener('scroll', () => {
+    if (isLoading) return;
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const threshold = document.body.offsetHeight - 200;
+    if (scrollPosition >= threshold) {
+      const approved = news.filter(n => n.status === 'approved');
+      const filtered = currentFilter === 'all' ? approved : approved.filter(n => n.tag === currentFilter);
+      if (displayedCount < filtered.length) {
+        isLoading = true;
+        setTimeout(() => {
+          displayedCount += 4;
+          render(); 
+          isLoading = false; 
+        }, 500);
+      }
+    }
+  });
+
+  // =================== СОЗДАНИЕ ПОСТА ===================
+  function openCreatePage() {
+    $('postTitle').value = '';
+    $('postText').value = '';
+    $('postTag').value = 'Объявления';
+    fileInput.value = ''; 
+    previewImg.src = '';
+    previewImg.style.display = 'none';
+    uploadLabel.textContent = '📷 Выбрать фото с компьютера';
+
+    uploadBlock.style.display = canUploadImage() ? 'block' : 'none';
+    showPage(createPage);
+  }
+
+  fileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast('Файл слишком большой (макс. 2 МБ)');
+        fileInput.value = ''; 
+        previewImg.style.display = 'none';
+        uploadLabel.textContent = '📷 Выбрать фото с компьютера';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        previewImg.src = event.target.result;
+        previewImg.style.display = 'block';
+        uploadLabel.textContent = '🔄 Заменить фото';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  $('cancelCreate').addEventListener('click', () => showPage(feedPage));
+
+  $('submitPost').addEventListener('click', () => {
+    const title = $('postTitle').value.trim();
+    const text = $('postText').value.trim();
+    const tag = $('postTag').value;
+    
+    if (!title) { toast('Введите заголовок'); $('postTitle').focus(); return; }
+    if (!text) { toast('Введите текст новости'); $('postText').focus(); return; }
+
+    const savePost = (imageBase64) => {
+      const post = {
+        id: Date.now(),
+        title: title,
+        text: text,
+        tag: tag,
+        date: todayISO(),
+        image: imageBase64 || null,
+        status: 'pending',
+        author: currentUser.name
+      };
+      news.unshift(post);
+      toast('📤 Отправлено на проверку администратору');
+      render();
+      showPage(feedPage);
+    };
+
+    if (canUploadImage() && fileInput.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = function(event) { savePost(event.target.result); };
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      savePost(null); 
+    }
+  });
+
+  // =================== МОДЕРАЦИЯ ===================
+  $('backToFeedFromMod').addEventListener('click', () => {
+    render();
+    showPage(feedPage);
+  });
+
+  function renderModeration() {
+    const pending = news.filter(n => n.status === 'pending');
+    const list = $('moderationList');
+    if (!pending.length) {
+      list.innerHTML = '<div class="empty">Нет новостей на модерации</div>';
+      return;
+    }
+    list.innerHTML = pending.map(n => `
+      <div class="mod-card">
+        <div class="meta">
+          <span class="tag">${esc(n.tag)}</span>
+          <span>${formatDate(n.date)}</span>
+          <span>· ${esc(n.author)}</span>
+          <span class="status pending">На проверке</span>
+        </div>
+        <h3>${esc(n.title)}</h3>
+        <p>${esc(n.text)}</p>
+        ${n.image ? `<img class="cover" src="${esc(n.image)}" alt="" loading="lazy" style="height:160px; border-radius:8px; margin-bottom:12px;">` : ''}
+        <div class="mod-actions">
+          <button class="btn btn-success" data-approve="${n.id}">✅ Одобрить</button>
+          <button class="btn btn-danger" data-reject="${n.id}">❌ Отклонить</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  $('moderationList').addEventListener('click', (e) => {
+    const approveId = e.target.dataset.approve;
+    const rejectId = e.target.dataset.reject;
+    if (approveId) {
+      const post = news.find(n => n.id === Number(approveId));
+      if (post) { post.status = 'approved'; toast('✅ Новость опубликована'); }
+      renderModeration(); render();
+    }
+    if (rejectId) {
+      const post = news.find(n => n.id === Number(rejectId));
+      if (post) { post.status = 'rejected'; toast('❌ Новость отклонена'); }
+      renderModeration(); render();
+    }
+  });
+
+  // =================== СТАРТ ===================
+  const savedRole = sessionStorage.getItem('authRole');
+  if (savedRole && USERS[savedRole]) {
+    currentUser = USERS[savedRole];
+    currentRole = savedRole;
+    enterApp();
+  } else {
+    loginScreen.style.display = 'flex';
+  }
+</script>
+
+</body>
+</html>
