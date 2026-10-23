@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой профиль</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <div class="logo-area" onclick="window.location.href='index.html'">
+                <div class="logo-icon"><span></span><span></span></div>
+                <div class="logo-text"><strong>УФИМСКИЙ<br>УНИВЕРСИТЕТ</strong></div>
+            </div>
+            <div class="nav-actions" id="user-nav"></div>
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <div class="profile-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="avatar" id="profile-avatar"></div>
+                <div>
+                    <h1 id="profile-name"></h1>
+                    <p id="user-info" style="color: var(--text-muted); margin-top: 5px;"></p>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <a href="index.html" class="btn-outline">← К новостям</a>
+                <button class="btn-primary" onclick="logout()">Выйти</button>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 20px;">Мои записи</h2>
+        <div id="my-records" class="my-records-list"></div>
+    </div>
+
+    <div id="edit-modal" class="modal-overlay">
+        <div class="form-container">
+            <button onclick="closeEditForm()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:1.5rem; cursor:pointer;">×</button>
+            <h2>Редактировать запись</h2>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">После редактирования запись снова уйдет на модерацию.</p>
+            <form onsubmit="saveEdit(event)">
+                <input type="hidden" id="edit-id">
+                <input type="text" id="edit-title" placeholder="Заголовок" required>
+                <textarea id="edit-text" placeholder="Текст новости..." required></textarea>
+                <input type="url" id="edit-image" placeholder="Ссылка на картинку">
+                <button type="submit" class="btn-submit">Сохранить и отправить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- КОНТЕЙНЕР ДЛЯ УВЕДОМЛЕНИЙ -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <footer>
+        <p>© 2026 Уфимский университет науки и технологий (Прототип)</p>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/news.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

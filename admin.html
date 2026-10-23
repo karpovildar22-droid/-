@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модерация — СтудЛента</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <div class="logo-area" onclick="window.location.href='index.html'">
+                <div class="logo-icon"><span></span><span></span></div>
+                <div class="logo-text"><strong>УФИМСКИЙ<br>УНИВЕРСИТЕТ</strong></div>
+            </div>
+            <div class="nav-actions" id="user-nav"></div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <h2>Новости на предмодерации</h2>
+        <p style="color:var(--text-muted); margin-bottom: 20px;">Здесь вы можете одобрить новость или вернуть её автору на доработку с указанием причины.</p>
+        
+        <div id="moderation-list"></div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ПРИЧИНЫ ОТКЛОНЕНИЯ -->
+    <div id="reject-modal" class="modal-overlay">
+        <div class="form-container">
+            <h2>Причина возврата</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:15px;">Опишите, что нужно исправить автору.</p>
+            <form onsubmit="submitReject(event)">
+                <input type="hidden" id="reject-id">
+                <textarea id="reject-reason" placeholder="Например: Укажите дату и время мероприятия..." required></textarea>
+                <div style="display:flex; gap:10px;">
+                    <button type="button" class="btn-outline" style="flex:1; margin-top:0;" onclick="closeRejectModal()">Отмена</button>
+                    <button type="submit" class="btn-submit" style="flex:1; margin-top:0;">Вернуть</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- КОНТЕЙНЕР ДЛЯ УВЕДОМЛЕНИЙ -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <footer>
+        <p>© 2026 Уфимский университет науки и технологий (Прототип)</p>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/news.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

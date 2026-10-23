@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новости — УУНиТ</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <div class="logo-area" onclick="window.location.href='index.html'">
+                <div class="logo-icon"><span></span><span></span></div>
+                <div class="logo-text">
+                    <strong>УФИМСКИЙ<br>УНИВЕРСИТЕТ</strong>
+                    <span>Студенческая лента</span>
+                </div>
+            </div>
+            <div class="nav-actions" id="user-nav"></div>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <h1>Новости</h1>
+        <div class="header-buttons">
+            <button class="btn-icon" onclick="toggleTheme()" title="Сменить тему">🌓</button>
+        </div>
+    </div>
+
+    <main id="news-container" class="news-grid"></main>
+
+    <div id="add-news-modal" class="modal-overlay">
+        <div class="form-container">
+            <button onclick="closeAddNewsForm()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-muted);">×</button>
+            <h2 id="modal-add-title">Предложить новость</h2>
+            <p style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Новость появится после проверки модератором</p>
+            <form onsubmit="submitNews(event)">
+                <input type="text" id="news-title" placeholder="Заголовок" required>
+                <textarea id="news-text" placeholder="Текст новости..." required></textarea>
+                <input type="url" id="news-image" placeholder="Ссылка на картинку (необязательно)">
+                <button type="submit" id="modal-add-btn" class="btn-submit">Отправить на модерацию</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="view-news-modal" class="modal-overlay">
+        <div class="article-modal" id="article-view-content"></div>
+    </div>
+
+    <!-- КОНТЕЙНЕР ДЛЯ УВЕДОМЛЕНИЙ -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <footer>
+        <p>© 2026 Уфимский университет науки и технологий (Прототип)</p>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/news.js"></script>
+</body>
+</html>
